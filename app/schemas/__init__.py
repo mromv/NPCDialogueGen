@@ -1,7 +1,7 @@
 """
 Модели данных для приложения
 """
-from .character import Character, PlayerProfile
+from .character import Character
 from .dialog import (
     BranchType, GoalCondition, Goal, Constraints, ChoiceEffect, Choice,
     NodeMetadata, DialogNode, DialogTree,
@@ -18,4 +18,3 @@ __all__ = [
     'NodeMetadata', 'DialogNode', 'DialogTree', 'TreeGenerationRequest', 'TreeGenerationResponse',
     'ContentGenerationRequest', 'ContentGenerationResponse'
 ]
-
