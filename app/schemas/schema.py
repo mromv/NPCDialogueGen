@@ -1,11 +1,12 @@
+"""
+Базовая модель данных, поддерживающая преобразование в текстовый промпт
+"""
 from typing import List, Dict
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo
 
 
 class AutoPromptModel(BaseModel):
-    """Базовый шаблон, поддерживающий преобразование модели данных в промпт"""
-
     _TAB = "  "
     _BULLET = "- "
 
