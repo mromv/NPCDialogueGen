@@ -1,11 +1,13 @@
 """
 Модели данных для персонажей
 """
-from pydantic import BaseModel, Field
+from pydantic import Field
 from typing import List, Dict, Optional
 
+from .schema import AutoPromptModel
 
-class Character(BaseModel):
+
+class Character(AutoPromptModel):
     """Модель NPC-персонажа для генерации диалогов"""
     name: str = Field(..., description="Имя персонажа")
     goals: List[str] = Field(..., description="Цели персонажа")

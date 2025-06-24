@@ -1,10 +1,11 @@
 """
 Модели данных для диалогов и диалоговых деревьев
 """
-from pydantic import BaseModel, Field
+from pydantic import Field
 from typing import List, Dict, Optional
 from enum import Enum
 
+from .schema import AutoPromptModel
 from .character import Character
 
 
@@ -17,14 +18,14 @@ class BranchType(str, Enum):
     SIDE_QUEST = "side_quest"  # что-нибудь редкое
 
 
-class GoalCondition(BaseModel):
+class GoalCondition(AutoPromptModel):
     """Условие для достижения цели"""
     description: str = Field(..., description="Описание условия")
     cond_type: Optional[str] = Field(None, description="Тип условия")
     value: Optional[str] = Field(None, description="Значение условия")
 
 
-class Goal(BaseModel):
+class Goal(AutoPromptModel):
     """Цель диалога"""
     type: str = Field(..., description="Тип цели (obtain_item, gather_information, etc.)")
     target: str = Field(..., description="Целевой объект или информация")
@@ -47,7 +48,7 @@ class Goal(BaseModel):
         }
 
 
-class Constraints(BaseModel):
+class Constraints(AutoPromptModel):
     """Ограничения для генерации диалога"""
     max_turns: Optional[int] = Field(5, description="Максимальное количество ходов - глубина дерева")
     min_turns: Optional[int] = Field(3, description="Минимальное количество ходов - мин. глубина самого короткого сюжета")
@@ -56,34 +57,16 @@ class Constraints(BaseModel):
     content_rating: Optional[str] = Field(None, description="Возрастной рейтинг контента")
     style: Optional[str] = Field(None, description="Стиль диалога (historical, fantasy, etc.)")
 
-    def as_prompt(self):
-        constraints_lines = []
-        if self.max_turns is not None:
-            constraints_lines.append(f"- Максимальная глубина диалога: {self.max_turns}")
-        if self.min_turns is not None:
-            constraints_lines.append(f"- Минимальная глубина: {self.min_turns}")
-        if self.n_storylines is not None:
-            constraints_lines.append(f"- Целевое количество финалов: {self.n_storylines}")
-        elif self.min_storylines is not None:
-            constraints_lines.append(f"- Минимумальное количество финалов: {self.min_storylines}")
-        if self.content_rating:
-            constraints_lines.append(f"- Возрастной рейтинг: {self.content_rating}")
-        if self.style:
-            constraints_lines.append(f"- Стиль диалога: {self.style}")
-
-        constraints_text = "---\n\n## Ограничения:\n" + "\n".join(constraints_lines) + "\n\n---" if constraints_lines else "---"
-        return constraints_text
-
 
 # TODO
-class ChoiceEffect(BaseModel):
+class ChoiceEffect(AutoPromptModel):
     """Эффект выбора игрока"""
     efftype: Optional[str] = Field(..., description="Тип эффекта")
     target: Optional[str] = Field(..., description="Цель эффекта")
     value: Optional[str] = Field(None, description="Значение эффекта")
 
 
-class Choice(BaseModel):
+class Choice(AutoPromptModel):
     """Вариант выбора игрока"""
     text: str = Field(..., description="Текст выбора")
     next_node_id: str = Field(..., description="ID следующего узла")
@@ -91,7 +74,7 @@ class Choice(BaseModel):
     effects: Optional[List[ChoiceEffect]] = Field(default_factory=list, description="Эффекты при выборе")
 
 
-class NodeMetadata(BaseModel):
+class NodeMetadata(AutoPromptModel):
     """Метаданные узла диалога (состояние)"""
     branch_type: Optional[BranchType] = Field(default=BranchType.MAIN_PATH, description="Тип ветки")
     difficulty: Optional[int] = Field(None, ge=1, le=5, description="Сложность узла")
@@ -102,7 +85,7 @@ class NodeMetadata(BaseModel):
     relationship_impact: Optional[Dict[str, float]] = Field(None, description="Влияние на отношения")   # TODO
 
 
-class DialogNode(BaseModel):
+class DialogNode(AutoPromptModel):
     """Узел диалогового дерева"""
     node_id: str = Field(..., description="Уникальный идентификатор узла")
     npc_text: Optional[str] = Field(default_factory=str, description="Реплика NPC")
@@ -116,7 +99,7 @@ class DialogNode(BaseModel):
     player_goal_hint: Optional[str] = Field(None, description="Что игрок, вероятно, попытается сделать на этом этапе")
 
 
-class DialogTree(BaseModel):
+class DialogTree(AutoPromptModel):
     """Диалоговое дерево"""
     root_node_id: str = Field(..., description="ID корневого узла")
     nodes: Dict[str, DialogNode] = Field(..., description="Словарь узлов")
@@ -125,7 +108,7 @@ class DialogTree(BaseModel):
     metadata: Optional[Dict] = Field(None, description="Дополнительные метаданные для дерева")
 
 
-class TreeGenerationRequest(BaseModel):
+class TreeGenerationRequest(AutoPromptModel):
     """Запрос на генерацию диалога"""
     character: Character = Field(..., description="Персонаж для диалога")
     goal: Goal = Field(..., description="Цель диалога")  # TODO: реализовать поддержку нескольких целей
@@ -133,7 +116,7 @@ class TreeGenerationRequest(BaseModel):
     examples: Optional[List[Dict]] = Field(None, description="Примеры диалогов")
 
 
-class TreeGenerationResponse(BaseModel):
+class TreeGenerationResponse(AutoPromptModel):
     """Ответ со сгенерированным диалоговым деревом"""
     dialog_tree: DialogTree = Field(..., description="Сгенерированное диалоговое дерево")
     logs: Optional[List[str]] = Field(None, description="Логи генерации дерева")
@@ -142,16 +125,15 @@ class TreeGenerationResponse(BaseModel):
 
 
 # TODO: здесь требуется разбиение на более мелкие классы (и в промпт цель прокинуть)
-class ContentGenerationRequest(BaseModel):
+class ContentGenerationRequest(AutoPromptModel):
     """Запрос на заполнение дерева"""
     dialog_tree: DialogTree = Field(..., description="Сгенерированное диалоговое дерево")
     character: Character = Field(..., description="Персонаж для диалога")
     # goal: Goal = Field(..., description="Цель диалога")  # TODO: реализовать поддержку нескольких целей
 
 
-class ContentGenerationResponse(BaseModel):
+class ContentGenerationResponse(AutoPromptModel):
     """Ответ со сгенерированным диалоговым деревом с заполненным репликами"""
     dialog_tree: DialogTree = Field(..., description="Заполненное диалоговое дерево")
     logs: Optional[List[str]] = Field(None, description="Логи при заполнении")
     generation_time: Optional[float] = Field(None, description="Время заполнения в секундах")
-
