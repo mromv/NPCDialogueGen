@@ -1,12 +1,12 @@
 """
-Модели данных для диалогов и диалоговых деревьев
+Общие модели данных для диалогов и диалоговых деревьев
 """
 from pydantic import Field
-from typing import List, Dict, Optional
+from typing import Optional, List, Dict
 from enum import Enum
 
 from .schema import AutoPromptModel
-from .character import Character
+
 
 
 class BranchType(str, Enum):
@@ -106,34 +106,3 @@ class DialogTree(AutoPromptModel):
     goal_achievement_paths: Optional[List[List[str]]] = Field(None, description="Пути к достижению цели")
     validation_score: Optional[float] = Field(None, ge=0.0, le=1.0, description="Оценка валидации")
     metadata: Optional[Dict] = Field(None, description="Дополнительные метаданные для дерева")
-
-
-class TreeGenerationRequest(AutoPromptModel):
-    """Запрос на генерацию диалога"""
-    character: Character = Field(..., description="Персонаж для диалога")
-    goal: Goal = Field(..., description="Цель диалога")  # TODO: реализовать поддержку нескольких целей
-    constraints: Optional[Constraints] = Field(None, description="Ограничения генерации")
-    examples: Optional[List[Dict]] = Field(None, description="Примеры диалогов")
-
-
-class TreeGenerationResponse(AutoPromptModel):
-    """Ответ со сгенерированным диалоговым деревом"""
-    dialog_tree: DialogTree = Field(..., description="Сгенерированное диалоговое дерево")
-    logs: Optional[List[str]] = Field(None, description="Логи генерации дерева")
-    recommendations: Optional[List[str]] = Field(None, description="Рекомендации по улучшению")
-    generation_time: Optional[float] = Field(None, description="Время генерации дерева в секундах")
-
-
-# TODO: здесь требуется разбиение на более мелкие классы (и в промпт цель прокинуть)
-class ContentGenerationRequest(AutoPromptModel):
-    """Запрос на заполнение дерева"""
-    dialog_tree: DialogTree = Field(..., description="Сгенерированное диалоговое дерево")
-    character: Character = Field(..., description="Персонаж для диалога")
-    # goal: Goal = Field(..., description="Цель диалога")  # TODO: реализовать поддержку нескольких целей
-
-
-class ContentGenerationResponse(AutoPromptModel):
-    """Ответ со сгенерированным диалоговым деревом с заполненным репликами"""
-    dialog_tree: DialogTree = Field(..., description="Заполненное диалоговое дерево")
-    logs: Optional[List[str]] = Field(None, description="Логи при заполнении")
-    generation_time: Optional[float] = Field(None, description="Время заполнения в секундах")
