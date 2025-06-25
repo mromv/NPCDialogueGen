@@ -25,8 +25,6 @@ class ContentWriter:
             request=request
         )
 
-        print(f"Это еще один реквест: {prompt}\n\n\n")
-
         response = await self.llm.generate(prompt=prompt)
 
         choices = [
