@@ -12,12 +12,15 @@ from app.schemas import (
 
 class PromptTemplates:
     """Коллекция шаблонов промптов для различных задач"""
+
+    tree_prompt_path = "app/prompts/tree.txt"
+    content_generation_prompt_path = "app/prompts/content_generation.txt"
         
     @staticmethod
     def tree_generation_prompt(
         request: TreeGenerationRequest
     ) -> str:
-        with open("app/prompts/tree.txt", "r", encoding="utf-8") as file:
+        with open(PromptTemplates.tree_prompt_path, "r", encoding="utf-8") as file:
             prompt_template = file.read()
         
         # пример ноды и дерева
@@ -41,7 +44,7 @@ class PromptTemplates:
         current_node: DialogNode,
         request: ContentGenerationRequest
     ) -> str:
-        with open("app/prompts/content_generation.txt", "r", encoding="utf-8") as file:
+        with open(PromptTemplates.content_generation_prompt_path, "r", encoding="utf-8") as file:
             prompt_template = file.read()
         
         tree = request.dialog_tree
