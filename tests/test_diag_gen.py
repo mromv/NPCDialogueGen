@@ -1,11 +1,11 @@
 import asyncio
 from app.schemas import (
-    Character, Goal, Constraints,
-    TreeGenerationRequest, TreeGenerationResponse,
-    ContentGenerationRequest, ContentGenerationResponse,
+    Character, Goal, StructureConstraints,
+    TreeGenerationRequest, ContentGenerationRequest,
+    GenerationResponse
 )
-from app.services.tree_generator import TreeGenerator
-from app.services.content_writer import ContentWriter
+from app.services import TreeGenerator, ContentWriter
+
 
 async def test_dialog_generation():
     # generators init
@@ -13,19 +13,20 @@ async def test_dialog_generation():
     content_writer = ContentWriter()
 
     # input example
-    char = Character(**Character.Config.json_schema_extra["example"])
+    character = Character(**Character.Config.json_schema_extra["example"])
     goal = Goal(**Goal.Config.json_schema_extra["example"])
-    const = Constraints(max_turns=5)
+    tree_constraints = StructureConstraints(max_turns=5)
 
-    request = TreeGenerationRequest(character=char, goal=goal, constraints=const)
-    dialog_tree: TreeGenerationResponse = await tree.generate_structure_tree(request)
+    tree_request = TreeGenerationRequest(character=character, goal=goal, constraints=tree_constraints)
+    dialog_tree: GenerationResponse = await tree.generate_structure_tree(tree_request)
 
     content_request = ContentGenerationRequest(
-        dialog_tree=dialog_tree.dialog_tree, 
-        character=char
+        dialog_tree=dialog_tree.dialog_tree,
+        character=character,
+        goal=goal,
     )
 
-    filled_dialog_tree: ContentGenerationResponse = await content_writer.fill_dialog_tree(
+    filled_dialog_tree: GenerationResponse = await content_writer.fill_dialog_tree(
         request=content_request
     )
 
