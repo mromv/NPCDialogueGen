@@ -1,12 +1,11 @@
 """
 Клиент для работы с OpenAI-совместимыми LLM API, включая DeepSeek
 """
-
 import json
 from typing import Dict, Any, Optional, List 
 from openai import AsyncOpenAI
-from app.utils.config import LLMConfig, settings
-from app.utils.system_prompts import SystemPrompts 
+
+from app.utils import SystemPrompts, LLMConfig, settings
 
 
 """
