@@ -68,7 +68,7 @@ class PromptTemplates:
             "branch_types": BranchType.as_prompt(),
             "node_description": DialogNode.model_description(),
             "history": history,
-            "node_content": current_node.as_prompt(),
+            "node_content": current_node.as_prompt(exclude_none=False),  # include none, чтобы пустые списки попали в промпт
             "response_example": json.dumps(example, indent=2, ensure_ascii=False),
         }
 
