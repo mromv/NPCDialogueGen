@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     llm_base: LLMConfig
     llm_tree: Optional[LLMConfig] = None
     llm_content: Optional[LLMConfig] = None
-    llm_validator: Optional[LLMConfig] = None
+    llm_tree_validator: Optional[LLMConfig] = None
     llm_regenerator: Optional[LLMConfig] = None
     
     # Валидация

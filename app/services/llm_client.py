@@ -136,6 +136,15 @@ class NodeContentLLMGenerator(BaseLLMGenerator):
         )
 
 
+class TreeLLMValidator(BaseLLMGenerator):
+    """Валидатор дерева диалогов"""
+    def __init__(self):
+        super().__init__(
+            config=settings.llm_tree_validator,
+            system_prompt=SystemPrompts.tree_validation_prompt
+        )
+
+
 # TODO
 class MockLLMValidator(BaseLLMGenerator):
     """Реализовать набор клиентов-валидаторов"""
@@ -143,12 +152,6 @@ class MockLLMValidator(BaseLLMGenerator):
 #    temperature=0.2
     pass
 
-# TODO
-class MockNodeLLMRegenerator(LLMClient):
-    """Реализовать набор перегенерацию деревьев"""
-#    system_prompt=SystemPrompts.improve_content_prompt,
-#    temperature=0.5
-    pass
 
 
 class LLMClients:
@@ -156,6 +159,7 @@ class LLMClients:
         self.base_client = LLMClient()
         self.tree = TreeLLMGenerator()
         self.content = NodeContentLLMGenerator()
+        self.tree_validator = TreeLLMValidator()
 
 
 llm_clients = LLMClients()

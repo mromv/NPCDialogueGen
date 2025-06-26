@@ -6,7 +6,8 @@ from .tree_iterator import get_ancestors
 from app.schemas import (
     BranchType, DialogNode, 
     DialogStructureNode, DialogStructureTree,
-    TreeGenerationRequest, ContentGenerationRequest
+    TreeGenerationRequest, ContentGenerationRequest,
+    TreeValidationRequest
 )
 
 
@@ -15,6 +16,7 @@ class PromptTemplates:
 
     tree_prompt_path = "app/prompts/tree.txt"
     content_generation_prompt_path = "app/prompts/content_generation.txt"
+    tree_validator_prompt_path = "app/prompts/tree_validation.txt"
         
     @staticmethod
     def tree_generation_prompt(
@@ -70,4 +72,25 @@ class PromptTemplates:
             "response_example": json.dumps(example, indent=2, ensure_ascii=False),
         }
 
+        return prompt_template.format(**data)
+    
+    @staticmethod
+    def tree_validation_prompt(
+        request: TreeValidationRequest
+    ) -> str:
+        """Генерирует промпт для валидации дерева по чеклисту"""
+        with open(PromptTemplates.tree_validator_prompt_path, "r", encoding="utf-8") as file:
+            prompt_template = file.read()
+        
+        dialog_tree = request.dialog_tree.model_dump()
+        
+        data = {
+            "character": request.character.as_prompt(),
+            "goal": request.goal.as_prompt(),
+            "branch_types": BranchType.as_prompt(),
+            "node_description": DialogNode.model_description(),
+            "constraints": request.constraints.as_prompt(),
+            "dialog_tree": json.dumps(dialog_tree, indent=2, ensure_ascii=False),
+        }
+        
         return prompt_template.format(**data)
