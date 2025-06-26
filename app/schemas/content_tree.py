@@ -1,14 +1,14 @@
 """
 Модели данных для генерации контента в узлах дерева диалогов
 """
-from typing import Optional, List
+from typing import Optional, List, Dict
 from pydantic import Field
 
 from .dialog import (
-    Choice, DialogTree, GenerationRequest
+    Choice, DialogBaseTree, GenerationBaseRequest, GenerationBaseResponse
 )
 
-from .tree import DialogStructureNode
+from .tree import DialogStructureNode, DialogStructureTree
 
 
 class DialogNode(DialogStructureNode):
@@ -43,6 +43,16 @@ class DialogNode(DialogStructureNode):
         }
 
 
-class ContentGenerationRequest(GenerationRequest):
+class DialogTree(DialogBaseTree):
+    """Диалоговое дерево после генерации его структуры"""
+    nodes: Dict[str, DialogNode] = Field(..., description="Словарь узлов")
+
+
+class ContentGenerationRequest(GenerationBaseRequest):
     """Запрос на заполнение дерева"""
-    dialog_tree: DialogTree = Field(..., description="Сгенерированное диалоговое дерево")
+    dialog_tree: DialogStructureTree = Field(..., description="Сгенерированное диалоговое дерево")
+
+
+class ContentGenerationResponse(GenerationBaseResponse):
+    """Базовый класс для ответов после генерации"""
+    dialog_tree: DialogTree = Field(..., description="Диалоговое дерево")

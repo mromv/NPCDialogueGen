@@ -1,11 +1,10 @@
 """
 Генератор структуры диалогового дерева
 """
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any
 from app.schemas import (
-    BranchType, NodeMetadata,
-    DialogStructureNode, DialogStructureTree, 
-    TreeGenerationRequest, GenerationResponse
+    NodeMetadata, DialogStructureNode, DialogStructureTree, 
+    TreeGenerationRequest, TreeGenerationResponse
 )
 from app.utils import PromptTemplates
 from .llm_client import llm_clients
@@ -50,10 +49,10 @@ class TreeGenerator:
     async def generate_structure_tree(
         self,
         request: TreeGenerationRequest
-    ) -> GenerationResponse:
+    ) -> TreeGenerationResponse:
         """Генерация DialogGenerationResponse"""
         generated_tree = await self._generate_tree(request)
         dialog_tree = self._structure_tree(generated_tree)
-        return GenerationResponse(
+        return TreeGenerationResponse(
             dialog_tree=dialog_tree
         )

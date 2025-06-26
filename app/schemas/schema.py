@@ -1,8 +1,7 @@
 """
 Базовая модель данных, поддерживающая преобразования в текстовый промпт
 """
-from typing import ClassVar
-from typing import List, Dict
+from typing import List, Dict, ClassVar
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo
 

@@ -1,11 +1,12 @@
 """
 Модели данных для генерации структуры диалогового дерева
 """
-from typing import Optional
+from typing import Optional, List, Dict
 from pydantic import Field
 
 from .dialog import (
-    Constraints, DialogBaseNode, DialogTree, GenerationRequest
+    Constraints, DialogBaseNode, DialogBaseTree,
+    GenerationBaseRequest, GenerationBaseResponse
 )
 
 
@@ -46,8 +47,9 @@ class DialogStructureNode(DialogBaseNode):
         }
 
 
-class DialogStructureTree(DialogTree):
+class DialogStructureTree(DialogBaseTree):
     """Диалоговое дерево после генерации его структуры"""
+    nodes: Dict[str, DialogStructureNode] = Field(..., description="Словарь узлов")
 
     class Config:
         json_schema_extra = {
@@ -72,6 +74,11 @@ class DialogStructureTree(DialogTree):
         }
 
 
-class TreeGenerationRequest(GenerationRequest):
+class TreeGenerationRequest(GenerationBaseRequest):
     """Запрос на генерацию диалога"""
     constraints: Optional[StructureConstraints] = Field(None, description="Ограничения при генерации дерева")
+
+
+class TreeGenerationResponse(GenerationBaseResponse):
+    """Базовый класс для ответов после генерации"""
+    dialog_tree: DialogStructureTree = Field(..., description="Диалоговое дерево")

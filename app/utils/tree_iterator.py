@@ -3,11 +3,11 @@
 """
 from collections import deque
 from typing import Optional, List, Set, Union, Iterator
-from app.schemas import DialogBaseNode, DialogTree
+from app.schemas import DialogBaseNode, DialogBaseTree
 
 
 def get_ancestors(
-    tree: DialogTree,
+    tree: DialogBaseTree,
     node_id: str,
     return_objects: bool = False
 ) -> List[List[str]]:
@@ -41,7 +41,7 @@ def get_ancestors(
 
 
 def bfs(
-    tree: DialogTree,
+    tree: DialogBaseTree,
     start_node_id: Optional[str] = None,
     yield_objects: bool = False
 ) -> Iterator[Union[DialogBaseNode, str]]:

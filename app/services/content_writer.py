@@ -2,7 +2,8 @@
 Контент-генератор для узлов дерева
 """
 from app.schemas import (
-    Choice, DialogNode, ContentGenerationRequest, GenerationResponse
+    Choice, DialogNode, DialogTree, 
+    ContentGenerationRequest, ContentGenerationResponse
 )
 from app.utils import PromptTemplates, bfs
 from .llm_client import llm_clients
@@ -37,16 +38,16 @@ class ContentWriter:
         node = DialogNode(
             npc_text=response.get("npc_text", ""),
             choices=choices,
-            **node.model_dump()
+            **node.model_dump(exclude={"npc_text", "choices"})
         )
 
         return node
 
     async def fill_dialog_tree(
         self, request: ContentGenerationRequest
-    ) -> GenerationResponse:
+    ) -> ContentGenerationResponse:
         """Заполняет все узлы дерева контентом"""
-        tree = request.dialog_tree
+        tree = DialogTree(**request.dialog_tree.model_dump())
         for node in bfs(tree, yield_objects=True):
             filled_node = await self._generate_node(
                 node=node,
@@ -54,6 +55,6 @@ class ContentWriter:
             )
             tree.nodes[node.node_id] = filled_node
 
-        return GenerationResponse(
+        return ContentGenerationResponse(
             dialog_tree=tree
         )

@@ -83,19 +83,18 @@ class Choice(AutoPromptModel):
     """Вариант выбора игрока"""
     text: str = Field(..., description="Текст выбора")
     next_node_id: str = Field(..., description="ID следующего узла")
-    # conditions: Optional[List[GoalCondition]] = Field(default_factory=list, description="Условия")
-    effects: Optional[List[ChoiceEffect]] = Field(default_factory=list, description="Эффекты при выборе")
+    # effects: Optional[List[ChoiceEffect]] = Field(default_factory=list, description="Эффекты при выборе")
 
 
 class NodeMetadata(AutoPromptModel):
     """Метаданные узла диалога (состояние)"""
     branch_type: Optional[BranchType] = Field(default=BranchType.MAIN_PATH, description="Тип ветки")
     difficulty: Optional[int] = Field(None, ge=1, le=5, description="Предполагаемая сложность прохождения узла (число от 1 до 5)")
-    goal_progress: Optional[float] = Field(default=None, ge=0.0, le=1.0, description="Прогресс к цели")  # TODO
-    emotional_state: Optional[str] = Field(None, description="Эмоциональное состояние NPC")  # TODO
-    required_items: Optional[List[str]] = Field(default_factory=list, description="Необходимые предметы")  # TODO
-    unlocked_info: Optional[List[str]] = Field(default_factory=list, description="Разблокированная информация")  # TODO
-    relationship_impact: Optional[Dict[str, float]] = Field(None, description="Влияние на отношения")   # TODO
+    # goal_progress: Optional[float] = Field(default=None, ge=0.0, le=1.0, description="Прогресс к цели")  # TODO
+    # emotional_state: Optional[str] = Field(None, description="Эмоциональное состояние NPC")  # TODO
+    # required_items: Optional[List[str]] = Field(default_factory=list, description="Необходимые предметы")  # TODO
+    # unlocked_info: Optional[List[str]] = Field(default_factory=list, description="Разблокированная информация")  # TODO
+    # relationship_impact: Optional[Dict[str, float]] = Field(None, description="Влияние на отношения")   # TODO
 
 
 class DialogBaseNode(AutoPromptModel):
@@ -106,26 +105,25 @@ class DialogBaseNode(AutoPromptModel):
     metadata: Optional[NodeMetadata] = Field(..., description="Метаданные текущей ноды")
 
 
-class DialogTree(AutoPromptModel):
+class DialogBaseTree(AutoPromptModel):
     """Диалоговое дерево"""
     root_node_id: str = Field(..., description="ID корневого узла")
     nodes: Dict[str, DialogBaseNode] = Field(..., description="Словарь узлов")
     goal_achievement_paths: Optional[List[List[str]]] = Field(None, description="Пути к достижению цели")
-    validation_score: Optional[float] = Field(None, ge=0.0, le=1.0, description="Оценка валидации")
     metadata: Optional[Dict] = Field(None, description="Дополнительные метаданные для дерева")
 
 
-class GenerationRequest(AutoPromptModel):
+class GenerationBaseRequest(AutoPromptModel):
     """Базовый класс для запросов на генерацию"""
     character: Character = Field(..., description="Персонаж для диалога")
     goal: Goal = Field(..., description="Цель диалога")  # TODO: реализовать поддержку нескольких целей
     constraints: Optional[Constraints] = Field(None, description="Ограничения генерации")
-    examples: Optional[List[Dict]] = Field(None, description="Примеры диалогов")
+    # examples: Optional[List[Dict]] = Field(None, description="Примеры диалогов")
 
 
-class GenerationResponse(AutoPromptModel):
+class GenerationBaseResponse(AutoPromptModel):
     """Базовый класс для ответов после генерации"""
-    dialog_tree: DialogTree = Field(..., description="Диалоговое дерево")
-    logs: Optional[List[str]] = Field(None, description="Логи при заполнении")
-    recommendations: Optional[List[str]] = Field(None, description="Рекомендации по улучшению")
-    generation_time: Optional[float] = Field(None, description="Время заполнения в секундах")
+    dialog_tree: DialogBaseTree = Field(..., description="Диалоговое дерево")
+    # logs: Optional[List[str]] = Field(None, description="Логи при заполнении")
+    # recommendations: Optional[List[str]] = Field(None, description="Рекомендации по улучшению")
+    # generation_time: Optional[float] = Field(None, description="Время заполнения в секундах")
