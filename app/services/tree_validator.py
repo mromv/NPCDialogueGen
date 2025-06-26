@@ -1,7 +1,7 @@
 from typing import Dict, Any
 
 from app.schemas import TreeValidationRequest, TreeValidationResponse
-from app.utils import PromptTemplates
+from app.utils import PromptFactory
 from .llm_client import llm_clients
 
 
@@ -12,7 +12,7 @@ class TreeValidator:
 
     async def _gen_eval(self, request: TreeValidationRequest) -> Dict[str, Any]:
         """Генерация оценок"""
-        prompt = PromptTemplates.tree_validation_prompt(request)
+        prompt = PromptFactory.build_prompt("tree_validation", request=request)
         response = await self.llm.generate(prompt=prompt)
         return response
     

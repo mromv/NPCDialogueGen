@@ -6,7 +6,7 @@ from app.schemas import (
     NodeMetadata, DialogStructureNode, DialogStructureTree, 
     TreeGenerationRequest, TreeGenerationResponse
 )
-from app.utils import PromptTemplates
+from app.utils import PromptFactory
 from .llm_client import llm_clients
 
 
@@ -21,7 +21,7 @@ class TreeGenerator:
         request: TreeGenerationRequest
     ) -> Dict[str, Any]:
         """Возвращаем сырую сгенерированную структуру дерева"""
-        prompt = PromptTemplates.tree_generation_prompt(request)
+        prompt = PromptFactory.build_prompt("tree_generation", request=request)
         generated_tree = await self.llm.generate(
             prompt=prompt,
         )

@@ -5,7 +5,7 @@ from app.schemas import (
     Choice, DialogNode, DialogTree, 
     ContentGenerationRequest, ContentGenerationResponse
 )
-from app.utils import PromptTemplates, bfs
+from app.utils import PromptFactory, bfs
 from .llm_client import llm_clients
 
 
@@ -21,7 +21,8 @@ class ContentWriter:
         request: ContentGenerationRequest
     ) -> DialogNode:
         """Заполняет один узел содержимым (NPC-реплика и выборы игрока)"""
-        prompt = PromptTemplates.node_content_prompt(
+        prompt = PromptFactory.build_prompt(
+            "node_content",
             current_node=node,
             request=request
         )
